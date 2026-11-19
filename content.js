@@ -127,32 +127,10 @@
     bar.setAttribute('aria-label', '빠른 답변 버튼');
     bar.contentEditable = 'false'; // 혹시 에디터 영역 안으로 취급되지 않도록
 
-    // ★ 핵심: mousedown 기본 동작을 막아야 버튼을 눌러도
-    //   에디터의 포커스와 커서 위치가 그대로 유지됩니다.
-    bar.addEventListener('mousedown', (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-    });
-
     // Gmail 전역 단축키(예: r, f, Enter)가 버튼 위에서 실행되지 않도록 차단
     bar.addEventListener('keydown', (e) => e.stopPropagation());
 
-    bar.addEventListener('click', (e) => {
-      const btn = e.target.closest('button');
-      if (!btn || !bar.contains(btn)) return;
-      e.preventDefault();
-      e.stopPropagation();
-
-      if (btn.dataset.action === 'settings') {
-        openSettings();
-        return;
-      }
-
-      const tpl = state.templates.find((t) => t && t.id === btn.dataset.id);
-      if (!tpl) return;
-      insertTemplate(editor, tpl.body || '');
-      flash(btn);
-    });
+    // ※ 마우스 클릭 처리는 아래 "클릭 처리" 구역에서 window 캡처 단계로 한꺼번에 합니다.
 
     renderBar(bar, editor);
     barByEditor.set(editor, bar);
@@ -204,6 +182,78 @@
     gear.textContent = '⚙';
     bar.append(gear);
   }
+
+  // ---------------------------------------------------------
+  // 클릭 처리
+  //
+  // Gmail 은 작성 창 안의 마우스 이벤트를 자체적으로 가로채는(전파 중단) 경우가 있어서,
+  // 버튼에 직접 단 리스너까지 이벤트가 오지 않을 수 있습니다.
+  // 그래서 가장 먼저 실행되는 window "캡처 단계"에서 우리 버튼 클릭을 먼저 잡아 처리합니다.
+  //  - pointerdown/mousedown 기본 동작 차단 → 버튼을 눌러도 에디터 커서가 유지됨
+  //  - 투명한 레이어가 버튼 위를 덮고 있어도 좌표로 버튼을 찾아냄 (elementsFromPoint)
+  // ---------------------------------------------------------
+  function barButtonFromEvent(e) {
+    const t = e.target;
+    let btn = t && t.nodeType === Node.ELEMENT_NODE ? t.closest('.gqr-bar button') : null;
+    if (!btn && e.isTrusted && (e.clientX || e.clientY)) {
+      btn = document
+        .elementsFromPoint(e.clientX, e.clientY)
+        .find((el) => el.matches && el.matches('.gqr-bar button')) || null;
+    }
+    return btn;
+  }
+
+  function handleBarClick(btn) {
+    const bar = btn.closest('.gqr-bar');
+    const editor = bar && editorByBar.get(bar);
+
+    if (btn.dataset.action === 'settings') {
+      openSettings();
+      return;
+    }
+    if (!editor || !editor.isConnected) {
+      LOG('연결된 본문 입력칸을 찾지 못했습니다. 답장 창을 다시 열어 주세요.');
+      return;
+    }
+
+    const tpl = state.templates.find((t) => t && t.id === btn.dataset.id);
+    if (!tpl) {
+      LOG('템플릿을 찾지 못했습니다:', btn.dataset.id);
+      return;
+    }
+
+    flash(btn); // 눌렸다는 표시는 먼저 (입력 중 오류가 나도 클릭 자체는 확인 가능)
+    try {
+      insertTemplate(editor, tpl.body || '');
+      LOG(`"${tpl.label}" 초안을 입력했습니다.`);
+    } catch (err) {
+      console.error('[Gmail 빠른 답변] 입력 중 오류:', err);
+    }
+  }
+
+  ['pointerdown', 'mousedown', 'pointerup', 'mouseup'].forEach((type) => {
+    window.addEventListener(
+      type,
+      (e) => {
+        if (!barButtonFromEvent(e)) return;
+        e.preventDefault();
+        e.stopImmediatePropagation();
+      },
+      true
+    );
+  });
+
+  window.addEventListener(
+    'click',
+    (e) => {
+      const btn = barButtonFromEvent(e);
+      if (!btn) return;
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      handleBarClick(btn);
+    },
+    true
+  );
 
   function flash(btn) {
     btn.classList.add('gqr-btn--done');

@@ -20,6 +20,10 @@
   user-select: none;
   -webkit-user-select: none;
   box-sizing: border-box;
+  /* Gmail 의 투명 레이어(드래그 앤 드롭 영역 등)보다 위에 오도록 */
+  position: relative;
+  z-index: 5;
+  pointer-events: auto;
 }
 
 .gqr-btn {
