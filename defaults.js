@@ -9,14 +9,14 @@ const GQR_STORAGE_KEYS = {
   settings: 'gqrSettings',   // { insertMode: 'cursor' | 'end' | 'replace' }
 };
 
-// 최초 설치 시 넣어 두는 샘플 버튼 4개
+// 최초 설치 시 넣어 두는 예시 버튼 1개
 const GQR_DEFAULT_TEMPLATES = [
   {
     id: 'default-plan',
     label: '예시',
     body:
-      '예시 템플릿입니다.\n', +
-      '마음대로 변경하고 추가해서 사용해주세요!\n',
+      '예시 템플릿입니다.\n' +
+      '마음대로 변경하고 추가해서 사용해주세요!',
   },
 ];
 
