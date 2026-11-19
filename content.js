@@ -78,6 +78,7 @@
   function teardown() {
     if (observer) observer.disconnect();
     observer = null;
+    try { resizeObserver.disconnect(); } catch (e) { /* 아직 생성 전이면 무시 */ }
     document.querySelectorAll('.gqr-bar').forEach((bar) => bar.remove());
   }
 
@@ -272,20 +273,80 @@
   // ---------------------------------------------------------
   // 에디터에 바 붙이기 (중복 삽입 방지 포함)
   // ---------------------------------------------------------
+  // 버튼 바가 "어떤 요소 바로 앞"에 붙어 있는지 기억 (처음엔 에디터, 겹치면 더 바깥 요소)
+  const anchorByBar = new WeakMap();
+  const resizeWatch = new WeakSet();
+
   function attach(editor) {
     if (!editor.parentNode || editor.closest('.gqr-bar')) return;
 
     const mine = barByEditor.get(editor);
-    // 이미 올바른 위치(에디터 바로 앞)에 붙어 있으면 아무것도 안 함
-    if (mine && mine.isConnected && mine.nextElementSibling === editor) return;
+    const anchor = mine && anchorByBar.get(mine);
+    // 이미 제자리(기억해 둔 기준 요소 바로 앞)에 있으면 아무것도 안 함
+    if (mine && mine.isConnected && anchor && anchor.isConnected &&
+        mine.nextElementSibling === anchor && anchor.contains(editor)) {
+      return;
+    }
     if (mine) mine.remove();
 
     // 바로 앞에 남아 있는 다른 바(이전 버전 스크립트가 만든 것 등)는 제거 후 새로 생성
     const prev = editor.previousElementSibling;
     if (prev && prev.classList.contains('gqr-bar')) prev.remove();
 
-    editor.parentNode.insertBefore(createBar(editor), editor);
+    const bar = createBar(editor);
+    editor.parentNode.insertBefore(bar, editor);
+    anchorByBar.set(bar, editor);
+    placeBar(bar, editor);
+    watchResize(editor);
     LOG('답장/작성 창에 버튼 바를 붙였습니다.', editor.getAttribute('aria-label') || '');
+  }
+
+  // ---------------------------------------------------------
+  // 겹침 방지 배치
+  //
+  // Gmail 은 본문 영역을 특수한 레이아웃(고정 높이, 절대 위치, 가로 배치 등)으로
+  // 그리는 경우가 있어, 에디터 바로 앞에 넣은 버튼 바 위로 입력한 글자가 겹쳐 보일 수 있습니다.
+  // 그래서 실제 화면 좌표로 "버튼 바가 본문보다 완전히 위에 있는지" 확인하고,
+  // 겹치면 한 단계씩 바깥 요소 앞으로 옮겨 겹치지 않는 자리를 찾습니다.
+  // (글을 입력해 본문 높이가 바뀔 때마다 다시 확인)
+  // ---------------------------------------------------------
+  function overlapsEditor(bar, editor) {
+    const b = bar.getBoundingClientRect();
+    const e = editor.getBoundingClientRect();
+    if (!b.height || !e.height) return false; // 화면에 안 보이는 상태면 판단 보류
+    // 버튼 바의 아래쪽이 본문 위쪽보다 내려와 있으면 "제자리 아님"
+    // (위로 겹친 경우뿐 아니라, 가로 배치로 본문 옆에 붙은 경우도 포함)
+    return b.bottom > e.top + 1;
+  }
+
+  function placeBar(bar, editor) {
+    if (!bar.isConnected || !editor.isConnected) return;
+    let anchor = anchorByBar.get(bar) || editor;
+
+    for (let i = 0; i < 6 && overlapsEditor(bar, editor); i++) {
+      const next = anchor.parentElement;
+      // 너무 멀리(다른 작성 창까지 포함하는 범위) 올라가지 않도록 제한
+      if (!next || !next.parentElement || next === document.body) break;
+      if (next.querySelectorAll(EDITOR_SELECTOR).length > 1) break;
+      anchor = next;
+      anchor.parentElement.insertBefore(bar, anchor);
+      anchorByBar.set(bar, anchor);
+    }
+  }
+
+  // 글 입력으로 본문 크기가 바뀌면 겹침 여부를 다시 확인
+  const resizeObserver = new ResizeObserver((entries) => {
+    for (const entry of entries) {
+      const editor = entry.target;
+      const bar = barByEditor.get(editor);
+      if (bar) requestAnimationFrame(() => placeBar(bar, editor));
+    }
+  });
+
+  function watchResize(editor) {
+    if (resizeWatch.has(editor)) return;
+    resizeWatch.add(editor);
+    resizeObserver.observe(editor);
   }
 
   // 화면 전체를 훑어 새 에디터에는 바를 붙이고, 사라진 에디터의 바는 제거
