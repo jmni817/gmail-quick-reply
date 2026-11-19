@@ -1,0 +1,12 @@
+# 초안 백업 파일은 올리지 않음
+*.backup.json
+
+# OS / 에디터
+.DS_Store
+Thumbs.db
+.vscode/
+
+# 확장 프로그램 패키지
+*.crx
+*.pem
+*.zip

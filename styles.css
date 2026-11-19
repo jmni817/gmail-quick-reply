@@ -1,0 +1,87 @@
+/* =============================================================
+   Gmail 빠른 답변 버튼 바 스타일
+   - 모든 클래스에 gqr- 접두사를 붙여 Gmail 스타일과 충돌하지 않게 함
+   - 반투명 색을 써서 Gmail 밝은/어두운 테마 모두에서 자연스럽게 보이도록 함
+   ============================================================= */
+
+.gqr-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin: 0 0 8px;
+  padding: 6px 8px;
+  border-radius: 8px;
+  background: rgba(26, 115, 232, 0.06);
+  border: 1px solid rgba(26, 115, 232, 0.18);
+  font-family: 'Google Sans', Roboto, 'Malgun Gothic', sans-serif;
+  font-size: 12px;
+  line-height: 1;
+  user-select: none;
+  -webkit-user-select: none;
+  box-sizing: border-box;
+}
+
+.gqr-btn {
+  all: unset; /* Gmail 의 button 기본 스타일 초기화 */
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  height: 26px;
+  padding: 0 12px;
+  border-radius: 13px;
+  background: #fff;
+  border: 1px solid rgba(26, 115, 232, 0.35);
+  color: #1a5fc4;
+  font: inherit;
+  font-weight: 500;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background 0.12s, border-color 0.12s, transform 0.08s;
+}
+
+.gqr-btn:hover {
+  background: rgba(26, 115, 232, 0.1);
+  border-color: rgba(26, 115, 232, 0.6);
+}
+
+.gqr-btn:active {
+  transform: scale(0.96);
+}
+
+.gqr-btn:focus-visible {
+  outline: 2px solid #1a73e8;
+  outline-offset: 1px;
+}
+
+/* 클릭 직후 잠깐 초록색으로 표시 */
+.gqr-btn--done {
+  background: #e6f4ea !important;
+  border-color: #34a853 !important;
+  color: #188038 !important;
+}
+
+.gqr-spacer {
+  flex: 1 1 auto;
+}
+
+.gqr-mode {
+  color: rgba(60, 64, 67, 0.75);
+  font-size: 11px;
+  padding: 0 2px;
+  white-space: nowrap;
+}
+
+.gqr-gear {
+  width: 26px;
+  padding: 0;
+  justify-content: center;
+  font-size: 14px;
+  color: rgba(60, 64, 67, 0.85);
+  border-color: rgba(60, 64, 67, 0.25);
+}
+
+.gqr-empty {
+  color: rgba(60, 64, 67, 0.75);
+  padding: 0 4px;
+}

@@ -1,0 +1,26 @@
+{
+  "manifest_version": 3,
+  "name": "Gmail 빠른 답변 버튼",
+  "version": "1.0.0",
+  "description": "Gmail 답장/전달/작성 창 위에 답변 초안 버튼 바를 띄우고, 클릭 한 번으로 본문에 입력합니다.",
+  "permissions": ["storage"],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://mail.google.com/*"],
+      "js": ["defaults.js", "content.js"],
+      "css": ["styles.css"],
+      "run_at": "document_idle"
+    }
+  ],
+  "action": {
+    "default_title": "답변 버튼 관리",
+    "default_popup": "popup.html"
+  },
+  "options_ui": {
+    "page": "popup.html",
+    "open_in_tab": true
+  }
+}
