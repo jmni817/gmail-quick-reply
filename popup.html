@@ -69,20 +69,40 @@
       padding: 12px 16px;
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: 6px;
       background: var(--surface);
     }
     .card {
       background: var(--bg);
       border: 1px solid var(--border);
       border-radius: 8px;
-      padding: 10px;
+      padding: 6px 8px;
       display: flex;
       flex-direction: column;
-      gap: 6px;
+      gap: 8px;
     }
-    .card-head { display: flex; gap: 6px; align-items: center; }
-    .card-head input { font-weight: 600; }
+    .card.open { border-color: var(--accent); padding: 8px 10px 10px; }
+    .card-head { display: flex; gap: 4px; align-items: center; }
+
+    /* 접힌 상태의 버튼 이름 — Gmail 버튼 바와 비슷한 칩 모양 */
+    .chip {
+      flex: 1 1 auto;
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      font-weight: 600;
+      color: var(--accent);
+      padding: 2px 4px;
+    }
+    .chip.untitled { color: var(--muted); font-weight: 400; font-style: italic; }
+    .toggle { min-width: 52px; }
+    .card.open .toggle { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); }
+
+    /* 펼친 상태의 편집 영역 */
+    .card-edit { display: flex; flex-direction: column; gap: 6px; }
+    .card-edit input { font-weight: 600; }
+    .card-actions { display: flex; justify-content: flex-end; }
     textarea { resize: vertical; min-height: 88px; line-height: 1.5; }
 
     button {

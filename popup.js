@@ -10,6 +10,7 @@ const $ = (sel) => document.querySelector(sel);
 let templates = [];
 let settings = { ...GQR_DEFAULT_SETTINGS };
 let saveTimer = null;
+let openId = null; // 현재 편집 중(펼쳐진) 버튼의 id, 없으면 null
 
 // ---------------------------------------------------------
 // 초기 로드
@@ -35,13 +36,47 @@ function render() {
   $('#empty').hidden = templates.length > 0;
 }
 
+// 목록에는 버튼 이름만 보여 주고, [편집]을 눌렀을 때만 이름·본문 편집 칸을 펼칩니다.
+// 한 번에 하나만 펼쳐지도록(아코디언) 해서 스크롤이 길어지지 않게 합니다.
 function createCard(t, index) {
+  const isOpen = openId === t.id;
   const card = document.createElement('section');
-  card.className = 'card';
+  card.className = 'card' + (isOpen ? ' open' : '');
 
-  // ── 첫 줄: 버튼 이름 + ↑ ↓ 삭제 ──
+  // ── 접힌 상태에서도 보이는 한 줄: 버튼 이름 + ↑ ↓ + 편집 토글 ──
   const head = document.createElement('div');
   head.className = 'card-head';
+
+  const name = document.createElement('span');
+  name.className = 'chip';
+  const setName = () => {
+    name.textContent = String(t.label || '').trim() || '(이름 없음)';
+    name.classList.toggle('untitled', !String(t.label || '').trim());
+    // 마우스를 올리면 본문 앞부분 미리보기
+    name.title = String(t.body || '').slice(0, 200) || '본문이 비어 있습니다';
+  };
+  setName();
+
+  const up = iconButton('↑', '위로', index === 0, () => move(index, -1));
+  const down = iconButton('↓', '아래로', index === templates.length - 1, () => move(index, 1));
+
+  const toggle = document.createElement('button');
+  toggle.type = 'button';
+  toggle.className = 'toggle';
+  toggle.textContent = isOpen ? '닫기' : '편집';
+  toggle.setAttribute('aria-expanded', String(isOpen));
+  toggle.addEventListener('click', () => {
+    openId = isOpen ? null : t.id;
+    render();
+  });
+
+  head.append(name, up, down, toggle);
+  card.append(head);
+  if (!isOpen) return card;
+
+  // ── 펼친 상태: 이름 / 본문 편집 + 삭제 ──
+  const editor = document.createElement('div');
+  editor.className = 'card-edit';
 
   const label = document.createElement('input');
   label.type = 'text';
@@ -51,25 +86,10 @@ function createCard(t, index) {
   label.setAttribute('aria-label', '버튼 이름');
   label.addEventListener('input', () => {
     t.label = label.value;
+    setName();
     scheduleSave();
   });
 
-  const up = iconButton('↑', '위로', index === 0, () => move(index, -1));
-  const down = iconButton('↓', '아래로', index === templates.length - 1, () => move(index, 1));
-
-  const del = document.createElement('button');
-  del.type = 'button';
-  del.className = 'danger';
-  del.textContent = '삭제';
-  armedClick(del, '정말 삭제?', () => {
-    templates.splice(index, 1);
-    render();
-    saveNow();
-  });
-
-  head.append(label, up, down, del);
-
-  // ── 본문 ──
   const body = document.createElement('textarea');
   body.value = t.body || '';
   body.placeholder = '이 버튼을 누르면 입력될 답변 초안을 적어 주세요.\n줄바꿈도 그대로 들어갑니다.';
@@ -77,10 +97,26 @@ function createCard(t, index) {
   body.setAttribute('aria-label', `${t.label || '버튼'} 본문`);
   body.addEventListener('input', () => {
     t.body = body.value;
+    setName();
     scheduleSave();
   });
 
-  card.append(head, body);
+  const actions = document.createElement('div');
+  actions.className = 'card-actions';
+  const del = document.createElement('button');
+  del.type = 'button';
+  del.className = 'danger';
+  del.textContent = '이 버튼 삭제';
+  armedClick(del, '정말 삭제?', () => {
+    templates.splice(index, 1);
+    openId = null;
+    render();
+    saveNow();
+  });
+  actions.append(del);
+
+  editor.append(label, body, actions);
+  card.append(editor);
   return card;
 }
 
@@ -165,12 +201,13 @@ $('#mode').addEventListener('change', (e) => {
 });
 
 $('#add').addEventListener('click', () => {
-  templates.push({ id: crypto.randomUUID(), label: '새 버튼', body: '' });
+  const t = { id: crypto.randomUUID(), label: '새 버튼', body: '' };
+  templates.push(t);
+  openId = t.id; // 새 버튼은 바로 편집 상태로 펼침
   render();
   saveNow();
   // 방금 추가한 카드의 이름 칸에 포커스
-  const inputs = document.querySelectorAll('.card input[type="text"]');
-  const last = inputs[inputs.length - 1];
+  const last = document.querySelector('.card.open input[type="text"]');
   if (last) {
     last.scrollIntoView({ block: 'nearest' });
     last.focus();
@@ -181,6 +218,7 @@ $('#add').addEventListener('click', () => {
 armedClick($('#reset'), '정말 복원?', () => {
   templates = structuredClone(GQR_DEFAULT_TEMPLATES);
   settings = { ...GQR_DEFAULT_SETTINGS };
+  openId = null;
   $('#mode').value = settings.insertMode;
   render();
   saveNow();
