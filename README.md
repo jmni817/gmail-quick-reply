@@ -47,3 +47,8 @@ gmail-quick-reply/
 - **입력 방식**: Gmail은 Trusted Types 정책 때문에 `innerHTML`/`insertHTML` 같은 HTML 문자열 삽입을 막습니다. 그래서 줄 내용은 `execCommand('insertText')`, 줄바꿈은 `execCommand('insertParagraph')`(Gmail과 같은 `<div>` 문단)로 "타이핑하듯" 넣고, 실패하면 텍스트 노드와 `<br>`을 직접 만들어 넣습니다. 끝나면 `input` / `change` 이벤트를 발생시켜 초안 자동 저장과 맞춥니다.
 - **포커스 유지**: 버튼 바의 `mousedown` 기본 동작을 막아 클릭해도 커서가 본문에서 빠지지 않고, 버튼은 모두 `type="button"`이라 폼 제출이 일어나지 않습니다.
 - **저장소**: `chrome.storage.local`을 씁니다. `sync`는 항목 하나당 8KB 제한이 있어 긴 템플릿 여러 개를 담기에 빠듯하기 때문입니다. 기기 간 동기화가 필요하면 `popup.js`/`content.js`/`background.js`의 `chrome.storage.local`을 `chrome.storage.sync`로 바꾸면 됩니다 (템플릿 전체가 8KB를 넘지 않는 범위에서).
+
+## 함께 쓰면 좋은 확장 프로그램
+
+- **[🍓 sip-and-sort](https://github.com/jmni817/sip-and-sort)**: 같은 제작자(jmni817)가 만든 Gmail 정리 도구입니다. 쌓인 협업 메일에 AI로 라벨을 붙이고, 답장 초안을 Gmail 임시보관함에 저장해 줍니다. (Windows exe)
+- sip-and-sort로 받은편지함을 분류하고 초안을 만든 뒤, 이 확장의 버튼으로 자주 쓰는 문구를 덧붙이면 **분류부터 답장 마무리까지** Gmail 안에서 끝낼 수 있습니다.
