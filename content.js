@@ -47,7 +47,6 @@
     '.gmail_extra',
   ].join(',');
 
-  const MODE_LABEL = { cursor: '커서 위치', end: '본문 끝', replace: '덮어쓰기' };
 
   // ---------------------------------------------------------
   // 상태
@@ -163,16 +162,10 @@
       bar.append(btn);
     }
 
-    // 오른쪽 끝: 현재 삽입 방식 + 설정 버튼
+    // 오른쪽 끝: 설정 버튼 (삽입 방식은 관리 화면에서만 표시·변경)
     const spacer = document.createElement('span');
     spacer.className = 'gqr-spacer';
     bar.append(spacer);
-
-    const mode = document.createElement('span');
-    mode.className = 'gqr-mode';
-    mode.textContent = MODE_LABEL[state.settings.insertMode] || MODE_LABEL.cursor;
-    mode.title = '삽입 방식 (⚙ 설정에서 변경)';
-    bar.append(mode);
 
     const gear = document.createElement('button');
     gear.type = 'button';
