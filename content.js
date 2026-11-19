@@ -22,14 +22,19 @@
   // 선택자 정의
   // ---------------------------------------------------------
 
-  // 본문 입력 영역 후보 (위에서부터 우선, 하나라도 맞으면 대상)
+  // 본문 입력 영역 후보 (하나라도 맞으면 대상)
   //  - g_editable="true" : Gmail 에디터가 붙이는 고유 속성 (언어와 무관)
-  //  - aria-label        : 한국어 "메일 본문" / 영어 "Message Body" (대소문자 무시: i)
+  //  - aria-label        : 한국어 "메시지 본문" / "메일 본문", 영어 "Message Body" 등
+  //    → 언어·문구 변화에 덜 민감하도록 "본문" / "body" 포함 여부로 판단 (i: 대소문자 무시)
+  //  ※ 제목 입력란은 <input>, 받는 사람은 role="combobox" 라서 여기에 걸리지 않습니다.
   const EDITOR_SELECTOR = [
+    'div[contenteditable="true"][g_editable="true"]',
     'div[role="textbox"][g_editable="true"]',
-    'div[role="textbox"][contenteditable="true"][aria-label*="메일 본문"]',
-    'div[role="textbox"][contenteditable="true"][aria-label*="message body" i]',
+    'div[role="textbox"][contenteditable="true"][aria-label*="본문"]',
+    'div[role="textbox"][contenteditable="true"][aria-label*="body" i]',
   ].join(',');
+
+  const LOG = (...args) => console.info('[Gmail 빠른 답변]', ...args);
 
   // 본문 안에서 "사용자가 쓰는 영역"이 끝나는 지점(서명·인용문).
   // 이 클래스들은 난독화된 UI 클래스가 아니라, 메일 HTML 자체에 들어가는
@@ -230,6 +235,7 @@
     if (prev && prev.classList.contains('gqr-bar')) prev.remove();
 
     editor.parentNode.insertBefore(createBar(editor), editor);
+    LOG('답장/작성 창에 버튼 바를 붙였습니다.', editor.getAttribute('aria-label') || '');
   }
 
   // 화면 전체를 훑어 새 에디터에는 바를 붙이고, 사라진 에디터의 바는 제거
@@ -455,6 +461,7 @@
   // 시작
   // ---------------------------------------------------------
   (async () => {
+    LOG('로드됨 — 답장/전달/편지쓰기 창을 열면 본문 위에 버튼 바가 나타납니다.');
     await loadData();
     listenStorage();
     startObserver();
