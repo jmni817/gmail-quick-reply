@@ -211,3 +211,13 @@ gmail-quick-reply/
 **gmail-quick-reply** is a Chrome extension (Manifest V3) that adds a bar of reply-template buttons right above the Gmail compose body (reply, forward, new message). One click inserts your saved text at the cursor, at the end, or replacing your draft, always keeping your signature and quoted thread intact. **It never sends email.**
 
 Templates are managed in the toolbar popup and stored only in your local Chrome profile (`chrome.storage.local`), with no network requests. To install, load this folder via `chrome://extensions` → Developer mode → *Load unpacked*, then refresh Gmail.
+
+<br>
+
+---
+
+## 🔖 라이선스
+
+[MIT License](LICENSE)
+자유롭게 사용·수정·배포할 수 있으며, 소프트웨어는 "있는 그대로" 제공됩니다.
+버튼으로 입력한 내용의 확인과 실제 발송에 대한 책임은 사용자에게 있습니다.
