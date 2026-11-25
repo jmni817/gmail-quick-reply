@@ -6,6 +6,7 @@
   <img src="https://img.shields.io/badge/Chrome-%ED%99%95%EC%9E%A5%20%ED%94%84%EB%A1%9C%EA%B7%B8%EB%9E%A8-D36279?logo=googlechrome&logoColor=white" alt="Chrome 확장 프로그램">
   <img src="https://img.shields.io/badge/Manifest-V3-EC5564" alt="Manifest V3">
   <a href="https://github.com/jmni817/gmail-quick-reply/commits/main"><img src="https://img.shields.io/github/last-commit/jmni817/gmail-quick-reply?label=%EB%A7%88%EC%A7%80%EB%A7%89%20%EC%97%85%EB%8D%B0%EC%9D%B4%ED%8A%B8&color=F08BAA" alt="마지막 업데이트"></a>
+  <a href="https://github.com/jmni817/gmail-quick-reply/releases/latest"><img src="https://img.shields.io/github/downloads/jmni817/gmail-quick-reply/total?label=%EB%8B%A4%EC%9A%B4%EB%A1%9C%EB%93%9C&color=F4A7B9" alt="다운로드 수"></a>
 </p>
 
 <p align="center">
@@ -14,6 +15,8 @@
 </p>
 
 <p align="center">
+  <a href="https://github.com/jmni817/gmail-quick-reply/releases/latest/download/gmail-quick-reply.zip"><b>📦 최신 버전 다운로드 (zip)</b></a>
+  &nbsp;·&nbsp;
   <a href="#-시작하기-설치"><b>💌 설치 방법 바로가기</b></a>
 </p>
 
@@ -77,7 +80,8 @@ Gmail 답장 · 전달 · 새 메일 작성 창의 본문 바로 위에 **답변
 
 ## 💌 시작하기 (설치)
 
-1. 이 저장소를 받습니다. (**Code → Download ZIP** 후 압축 풀기, 또는 `git clone`)
+1. **[최신 버전 zip 다운로드](https://github.com/jmni817/gmail-quick-reply/releases/latest/download/gmail-quick-reply.zip)** 후 원하는 곳에 압축을 풉니다.
+   (지난 버전과 변경 내역은 [Releases](https://github.com/jmni817/gmail-quick-reply/releases) 페이지에 있습니다. 코드를 직접 고치고 싶다면 `git clone`도 됩니다.)
 2. Chrome 주소창에 `chrome://extensions` 입력
 3. 오른쪽 위 **개발자 모드** 켜기
 4. **압축해제된 확장 프로그램을 로드합니다** 클릭 → `manifest.json`이 들어 있는 폴더 선택
@@ -92,6 +96,7 @@ Gmail 답장 · 전달 · 새 메일 작성 창의 본문 바로 위에 **답변
 ### 알아두면 좋은 기능
 
 - **🍒 업데이트 적용**
+  새 버전이 나오면 zip을 받아 **기존 폴더에 덮어쓰기** 하세요. (폴더 경로가 같아야 초안이 유지됩니다.)
   코드를 받거나 고친 뒤에는 `chrome://extensions`에서 이 확장의 🔄 버튼을 누르고, Gmail 탭도 새로고침하세요.
 
 - **🧁 툴바에 고정**
