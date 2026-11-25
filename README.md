@@ -190,7 +190,8 @@ gmail-quick-reply/
 ├── popup.html         # 버튼 관리 화면 (툴바 팝업 / 옵션 페이지 공용)
 ├── popup.js           # 버튼 추가 · 수정 · 삭제 · 순서 변경, 자동 저장
 ├── icons/             # 확장 아이콘 (16 / 32 / 48 / 128px)
-└── assets/labels/     # README 안내 라벨 이미지
+├── assets/labels/     # README 안내 라벨 이미지
+└── LICENSE            # MIT 라이선스
 ```
 
 ### 💞 기여하기
