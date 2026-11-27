@@ -57,6 +57,24 @@ function createCard(t, index) {
   };
   setName();
 
+  // 순서 변경 손잡이: 포커스한 뒤 ↑ ↓ 방향키로 한 칸씩 이동
+  const handle = document.createElement('button');
+  handle.type = 'button';
+  handle.className = 'handle';
+  handle.textContent = '⠿';
+  handle.title = '순서 변경 (키보드: ↑ ↓ 방향키)';
+  handle.setAttribute('aria-label', `${String(t.label || '').trim() || '버튼'} 순서 변경 손잡이`);
+  handle.addEventListener('keydown', (e) => {
+    if (e.key !== 'ArrowUp' && e.key !== 'ArrowDown') return;
+    e.preventDefault();
+    const target = index + (e.key === 'ArrowUp' ? -1 : 1);
+    if (target < 0 || target >= templates.length) return;
+    reorder(index, target).then(() => {
+      // 이동한 항목의 손잡이에 포커스를 유지해 연속으로 옮길 수 있게 함
+      document.querySelectorAll('#list .handle')[target]?.focus();
+    });
+  });
+
   const up = iconButton('↑', '위로', index === 0, () => move(index, -1));
   const down = iconButton('↓', '아래로', index === templates.length - 1, () => move(index, 1));
 
@@ -70,7 +88,7 @@ function createCard(t, index) {
     render();
   });
 
-  head.append(name, up, down, toggle);
+  head.append(handle, name, up, down, toggle);
   card.append(head);
   if (!isOpen) return card;
 
