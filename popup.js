@@ -156,10 +156,26 @@ function armedClick(button, armedText, action) {
 function move(index, delta) {
   const target = index + delta;
   if (target < 0 || target >= templates.length) return;
-  [templates[index], templates[target]] = [templates[target], templates[index]];
-  render();
-  saveNow();
+  reorder(index, target);
 }
+
+// from 위치의 항목을 꺼내 to 위치에 끼워 넣고 저장합니다.
+// 저장에 실패하면 화면 순서를 원래대로 되돌려, 보이는 순서와 저장된 순서가 어긋나지 않게 합니다.
+async function reorder(from, to) {
+  if (from === to) return true;
+  const before = templates.slice();
+  const [item] = templates.splice(from, 1);
+  templates.splice(to, 0, item);
+  render();
+  const ok = await saveNow();
+  if (!ok) {
+    templates = before;
+    render();
+    setStatus('순서 저장 실패 — 원래 순서로 되돌렸습니다');
+  }
+  return ok;
+}
+
 
 // ---------------------------------------------------------
 // 저장
@@ -176,14 +192,17 @@ function scheduleSave() {
   saveTimer = setTimeout(saveNow, 350);
 }
 
+// 저장 성공 여부를 true / false 로 돌려줍니다. (순서 변경 실패 시 되돌리기에 사용)
 async function saveNow() {
   clearTimeout(saveTimer);
   saveTimer = null;
   try {
     await chrome.storage.local.set({ [K.templates]: templates, [K.settings]: settings });
     setStatus('저장됨 ✓', true);
+    return true;
   } catch (e) {
     setStatus('저장 실패: ' + e.message);
+    return false;
   }
 }
 
