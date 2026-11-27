@@ -3,6 +3,10 @@
 <h1 align="center">💌 gmail-quick-reply</h1>
 
 <p align="center">
+  <b>한국어</b> · <a href="README.en.md">English</a>
+</p>
+
+<p align="center">
   <img src="https://img.shields.io/badge/Chrome-%ED%99%95%EC%9E%A5%20%ED%94%84%EB%A1%9C%EA%B7%B8%EB%9E%A8-D36279?logo=googlechrome&logoColor=white" alt="Chrome 확장 프로그램">
   <img src="https://img.shields.io/badge/Manifest-V3-EC5564" alt="Manifest V3">
   <a href="https://github.com/eight-studio/gmail-quick-reply/commits/main"><img src="https://img.shields.io/github/last-commit/eight-studio/gmail-quick-reply?label=%EB%A7%88%EC%A7%80%EB%A7%89%20%EC%97%85%EB%8D%B0%EC%9D%B4%ED%8A%B8&color=F08BAA" alt="마지막 업데이트"></a>
@@ -217,6 +221,8 @@ gmail-quick-reply/
 **gmail-quick-reply** is a Chrome extension (Manifest V3) that adds a bar of reply-template buttons right above the Gmail compose body (reply, forward, new message). One click inserts your saved text at the cursor, at the end, or replacing your draft, always keeping your signature and quoted thread intact. **It never sends email.**
 
 Templates are managed in the toolbar popup and stored only in your local Chrome profile (`chrome.storage.local`), with no network requests. To install, load this folder via `chrome://extensions` → Developer mode → *Load unpacked*, then refresh Gmail.
+
+👉 **[Read the full English README](README.en.md)**
 
 <br>
 
