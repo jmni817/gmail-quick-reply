@@ -124,6 +124,20 @@
     .primary:hover { background: var(--accent); filter: brightness(1.08); }
     @media (prefers-color-scheme: dark) { .primary { color: #202124; } }
 
+    /* ── 순서 변경 손잡이 ── */
+    .handle {
+      width: 22px;
+      padding: 5px 0;
+      border-color: transparent;
+      background: transparent;
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1;
+      cursor: grab;
+      touch-action: none; /* 터치로 끌 때 화면이 대신 스크롤되지 않도록 */
+    }
+    .handle:hover { color: var(--accent); background: var(--accent-soft); }
+    .handle:focus-visible { outline: 2px solid var(--accent); outline-offset: -1px; }
     #empty { color: var(--muted); text-align: center; padding: 18px 0; }
 
     footer {
